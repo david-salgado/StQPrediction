@@ -1,0 +1,21 @@
+Package: StQPrediction
+Type: Package
+Title: Define S4 classes and methods to make predictions
+Version: 0.1.0
+Authors@R: c(
+    person("David", "Salgado", email = "david.salgado.fernandez@gmail.com", role = c("cre", "aut")),
+    person("Elisa", "Esteban", email = "elisa.esteban.segurado@gmail.com", role = "aut"),
+    person("Soledad", "Saldaña", email = "soledad.saldana.diaz@gmail.com", role = "aut"))
+Maintainer: David Salgado <david.salgado.fernandez@google.com>
+Description: Define S4 classes and methods to make predictions to be used in the optimization approach to selective editing
+Depends:
+    R (>= 3.3.2)
+Imports:
+    methods (>= 3.3.0),
+    data.table (>= 1.10.0),
+    StQ (>= 0.3.3),
+    RepoTime (>= 0.1.0),
+    StQImputation (>= 0.0.1)
+License: file LICENSE
+Encoding: UTF-8
+LazyData: true
