@@ -4,8 +4,6 @@
 #' predictions in the optimization approach to selective editing.
 #'
 #'
-#' @slot RawData \linkS4class{StQ} object with the raw data.
-#'
 #' @slot EdData \linkS4class{StQ} object with the edited data.
 #'
 #' @slot VarNames Character vector with the names of the variables whose probability errors are to
@@ -39,13 +37,11 @@
 #'
 #' @export
 setClass(Class = "PredlmParam",
-         slots = c(RawData = 'StQList',
-                   EdData = 'StQList',
+         slots = c(EdData = 'StQ',
                    VarNames = 'character',
                    DomainNames = 'character',
                    Imputation = 'ImputationParam'),
-         prototype = list(RawData = new(Class = 'StQList'),
-                          EdData = new(Class = 'StQList'),
+         prototype = list(EdData = new(Class = 'StQ'),
                           VarNames = character(0),
                           DomainNames = character(0),
                           Imputation = new(Class = 'MeanImputationParam')),
@@ -53,7 +49,7 @@ setClass(Class = "PredlmParam",
 
            if (!all(object@VarNames == object@Imputation@VarNames)) {
 
-             stop('[StQImputation:: validity ErrorProbMLEParam] The slots VarNames in the object and in the slot Imputation must be the same.\n')
+             stop('[StQPrediction:: validity PredlmParam] The slots VarNames in the object and in the slot Imputation must be the same.\n')
 
            }
 

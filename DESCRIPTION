@@ -23,4 +23,5 @@ LazyData: true
 Collate:
     'PredlmParam-class.R'
     'PredParam-class.R'
+    'Predict.R'
 RoxygenNote: 5.0.1

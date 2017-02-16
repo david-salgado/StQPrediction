@@ -11,8 +11,6 @@ predictions in the optimization approach to selective editing.
 \section{Slots}{
 
 \describe{
-\item{\code{RawData}}{\linkS4class{StQ} object with the raw data.}
-
 \item{\code{EdData}}{\linkS4class{StQ} object with the edited data.}
 
 \item{\code{VarNames}}{Character vector with the names of the variables whose probability errors are to
