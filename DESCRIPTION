@@ -7,7 +7,8 @@ Authors@R: c(
     person("Elisa", "Esteban", email = "elisa.esteban.segurado@gmail.com", role = "aut"),
     person("Soledad", "Saldaña", email = "soledad.saldana.diaz@gmail.com", role = "aut"))
 Maintainer: David Salgado <david.salgado.fernandez@google.com>
-Description: Define S4 classes and methods to make predictions to be used in the optimization approach to selective editing
+Description: Define S4 classes and methods to make predictions to be used in the
+    optimization approach to selective editing
 Depends:
     R (>= 3.3.2)
 Imports:
@@ -19,3 +20,7 @@ Imports:
 License: file LICENSE
 Encoding: UTF-8
 LazyData: true
+Collate:
+    'PredlmParam-class.R'
+    'PredParam-class.R'
+RoxygenNote: 5.0.1
