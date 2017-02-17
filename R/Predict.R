@@ -26,12 +26,13 @@
 #' VarNames <- c('CifraNeg_13.___', 'Personal_07.__2.__')
 #' FD.dm <- dcast_StQ(FD.StQ, ExtractNames(VarNames))[, c(IDQuals, VarNames), with = FALSE]
 #' FF.StQ <- ReadRepoFile('S:/E30183/E30183.FF_V1.MM032016.D_1', DD, perl = TRUE)
-#' DomainName <- 'Tame_05._2.'
+#' DomainName <- c('Tame_05._2.', 'ActivEcono_35._4._2.1.4._0')
 #' FF.dm <- dcast_StQ(FF.StQ, ExtractNames(DomainName))[, c(IDQuals, DomainName), with = FALSE]
 #' FD.dm <- merge(FD.dm, FF.dm, by = IDQuals, all.x = TRUE)
 #' FF.StQ <- ReadRepoFile('S:/E30183/E30183.FF_V1.MM022016.D_1', DD, perl = TRUE)
 #' ImpParam <- new(Class = 'MeanImputationParam',
-#'                 VarNames = c('CifraNeg_13.___', 'Personal_07.__2.__'),
+#'                 VarNames = c('PredCifraNeg_13.___', 'PredErrorSTDCifraNeg_13.___',
+#'                              'PredPersonal_07.__2.__', 'PredErrorSTDPersonal_07.__2.__'),
 #'                 DomainNames =  c('Tame_05._2.', 'ActivEcono_35._4._2.1.4._0'))
 #' PredlmParam <- new(Class = 'PredlmParam',
 #'                    EdData = FF.StQ,
@@ -56,10 +57,18 @@ setMethod(f = "Predict",
 
           if (!all(Param@DomainNames %in% names(object))) {
 
-            stop('[StQPrediction:: Predict] DomainNames in object Param not contained in input object.')
+            stop('[StQPrediction:: Predict] DomainNames in slot DomainNames not contained in input object Param.')
 
           }
+
+          if (!all(Param@Imputation@DomainNames %in% names(object))) {
+
+            stop('[StQPrediction:: Predict] DomainNames in slot Imputation not contained in input object Param.')
+
+          }
+
           Variables <- Param@VarNames
+          DomainNames <- unique(c(Param@DomainNames, Param@Imputation@DomainNames))
           EdData.StQ <- Param@EdData
           Units <- getUnits(EdData.StQ)
           IDQuals <- names(Units)
@@ -85,7 +94,8 @@ setMethod(f = "Predict",
             return(out)
           })
           output <- Reduce(function(x, y){merge(x, y, by = intersect(names(x), names(y)), all = TRUE)}, lms, init = lms[[1]])
-          output <- output[Data[, c(IDQuals, Param@DomainNames), with = FALSE]]
+          output <- output[Data[, c(IDQuals, DomainNames), with = FALSE]]
+          output <- Impute(output, Param@Imputation)
           return(output)
 
           return(lms)

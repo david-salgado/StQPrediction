@@ -47,11 +47,6 @@ setClass(Class = "PredlmParam",
                           Imputation = new(Class = 'MeanImputationParam')),
          validity = function(object){
 
-           if (!all(object@VarNames == object@Imputation@VarNames)) {
-
-             stop('[StQPrediction:: validity PredlmParam] The slots VarNames in the object and in the slot Imputation must be the same.\n')
-
-           }
 
            return(TRUE)
          }
