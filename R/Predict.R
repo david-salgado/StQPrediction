@@ -73,19 +73,32 @@ setMethod(f = "Predict",
           Units <- getUnits(EdData.StQ)
           IDQuals <- names(Units)
           EdData.dm <- dcast_StQ(EdData.StQ, ExtractNames(Variables))[, c(IDQuals, Variables), with = FALSE]
+
           byVars <- setdiff(intersect(names(object), names(EdData.dm)), Variables)
           Data <- merge(EdData.dm, object, by = byVars, all.y = TRUE)
           DataSplit <- split(Data, Data[, Param@DomainNames, with = F])
-
-          lms <- lapply(DataSplit, function(DataComponent){
+          Preds <- lapply(DataSplit, function(DataComponent){
 
             out <- lapply(Variables, function(Var){
 
               localData <- DataComponent[get(paste0(Var, '.y')) > 0 & get(paste0(Var, '.x')) > 0]
-              localModel <- lm(as.formula(paste(paste0(Var, '.y'), paste0(Var, '.x'), sep = ' ~ ')), localData)
-              localPred <- predict(localModel, newdata = DataComponent[, paste0(Var, '.x'), with = FALSE], interval = 'prediction')
-              Predstd <- (localPred[, 'upr'] - localPred[, 'lwr']) / (2 * qt(0.95, df.residual(localModel)))
-              outLocal <- cbind(DataComponent[, IDQuals, with = FALSE], data.table(localPred[, 'fit'], Predstd))
+              nLocalData <- dim(localData)[1]
+              if (nLocalData >= 3){
+
+                localModel <- lm(as.formula(paste(paste0(Var, '.y'), paste0(Var, '.x'), sep = ' ~ ')), localData)
+                localPred <- predict(localModel, newdata = DataComponent[, paste0(Var, '.x'), with = FALSE], interval = 'prediction')
+                Predstd <- (localPred[, 'upr'] - localPred[, 'lwr']) / (2 * qt(0.95, df.residual(localModel)))
+                outLocal <- cbind(DataComponent[, IDQuals, with = FALSE], data.table(localPred[, 'fit'], Predstd))
+
+              } else if (nLocalData >0) {
+
+                outLocal <- cbind(DataComponent[, IDQuals, with = FALSE], data.table(rep(NA_real_, nLocalData), rep(NA_real_, nLocalData)))
+
+              } else {
+
+                outLocal <- cbind(DataComponent[, IDQuals, with = FALSE][0], data.table(numeric(0), numeric(0)))
+
+              }
               setnames(outLocal, c(IDQuals, paste0('Pred', Var), paste0('PredErrorSTD', Var)))
               return(outLocal)
             })
@@ -93,7 +106,8 @@ setMethod(f = "Predict",
             out <- Reduce(function(x, y){merge(x, y, by = intersect(names(x), names(y)))}, out, init = out[[1]])
             return(out)
           })
-          output <- Reduce(function(x, y){merge(x, y, by = intersect(names(x), names(y)), all = TRUE)}, lms, init = lms[[1]])
+
+          output <- Reduce(function(x, y){merge(x, y, by = intersect(names(x), names(y)), all = TRUE)}, Preds, init = Preds[[1]])
           output <- output[Data[, c(IDQuals, DomainNames), with = FALSE]]
           output <- Impute(output, Param@Imputation)
           return(output)
