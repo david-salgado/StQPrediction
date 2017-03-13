@@ -10,7 +10,7 @@ Maintainer: David Salgado <david.salgado.fernandez@google.com>
 Description: Define S4 classes and methods to make predictions to be used in the
     optimization approach to selective editing
 Depends:
-    R (>= 3.3.2)
+    R (>= 3.3.0)
 Imports:
     methods (>= 3.3.0),
     data.table (>= 1.10.0),
@@ -20,8 +20,9 @@ Imports:
 License: file LICENSE
 Encoding: UTF-8
 LazyData: true
-Collate:
+Collate: 
     'PredlmParam-class.R'
     'PredParam-class.R'
+    'PredTSParam-class.R'
     'Predict.R'
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

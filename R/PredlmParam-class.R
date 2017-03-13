@@ -24,11 +24,11 @@
 #' ImpParam <- new(Class = 'PredlmParam',
 #'                 VarNames = 'CifraNeg_13.___',
 #'                 DomainNames =  'Tame_05._4.')
-#' ErrorProbMLEParam <- new(Class = 'PredlmParam',
-#'                          RawData = FD.StQList,
-#'                          EdData = FG.StQList,
-#'                          VarNames = 'CifraNeg_13.___',
-#'                          Imputation = ImpParam)
+#' PredlmParam <- new(Class = 'PredlmParam',
+#'                    RawData = FD.StQList,
+#'                    EdData = FF.StQList,
+#'                    VarNames = 'CifraNeg_13.___',
+#'                    Imputation = ImpParam)
 #'
 #'
 #' }
@@ -41,7 +41,7 @@ setClass(Class = "PredlmParam",
                    VarNames = 'character',
                    DomainNames = 'character',
                    Imputation = 'ImputationParam'),
-         prototype = list(EdData = new(Class = 'StQ'),
+         prototype = list(EdData = StQ(),
                           VarNames = character(0),
                           DomainNames = character(0),
                           Imputation = new(Class = 'MeanImputationParam')),

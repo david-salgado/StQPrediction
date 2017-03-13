@@ -3,13 +3,16 @@
 \docType{methods}
 \name{Predict}
 \alias{Predict}
-\alias{Predict,data.table,MeanImputationParam-method}
+\alias{Predict,data.table,PredlmParam-method}
+\alias{Predict,data.table,PredTSParam-method}
 \title{\code{Predict} computes the predicted values and their standard deviations for each
 statistical unit}
 \usage{
 Predict(object, Param)
 
-\S4method{Predict}{data.table,MeanImputationParam}(object, Param)
+\S4method{Predict}{data.table,PredlmParam}(object, Param)
+
+\S4method{Predict}{data.table,PredTSParam}(object, Param)
 }
 \arguments{
 \item{object}{\linkS4class{data.table} containing the statistical units whose predicted values
@@ -20,7 +23,7 @@ the method of computation of the predicted values and standard deviations of eac
 unit.}
 }
 \value{
-Object of class \linkS4class{contObsPredModelParam} with the predicted values and
+\linkS4class{data.table} with the predicted values and
 standard deviations computed for each variable and each statistical unit.
 }
 \description{
@@ -31,19 +34,55 @@ statistical unit
 \dontrun{
 
 library(xlsx)
+library(StQ)
 library(RepoReadWrite)
 DD <- RepoXLSToDD('S:/E30183/E30183.NombresVariables_V1.xlsx')
 FD.StQ <- ReadRepoFile('S:/E30183/E30183.FD_V1.MM032016.P_1', DD, perl = TRUE)
+Units <- getUnits(FD.StQ)
+IDQuals <- names(Units)
+VarNames <- c('CifraNeg_13.___', 'Personal_07.__2.__')
+FD.dm <- dcast_StQ(FD.StQ, ExtractNames(VarNames))[, c(IDQuals, VarNames), with = FALSE]
+FF.StQ <- ReadRepoFile('S:/E30183/E30183.FF_V1.MM032016.D_1', DD, perl = TRUE)
+DomainName <- c('Tame_05._2.', 'ActivEcono_35._4._2.1.4._0')
+FF.dm <- dcast_StQ(FF.StQ, ExtractNames(DomainName))[, c(IDQuals, DomainName), with = FALSE]
+FD.dm <- merge(FD.dm, FF.dm, by = IDQuals, all.x = TRUE)
 FF.StQ <- ReadRepoFile('S:/E30183/E30183.FF_V1.MM022016.D_1', DD, perl = TRUE)
 ImpParam <- new(Class = 'MeanImputationParam',
-                VarNames = c('CifraNeg_13.___', 'Personal_07.__2.__'),
+                VarNames = c('PredCifraNeg_13.___', 'PredErrorSTDCifraNeg_13.___',
+                             'PredPersonal_07.__2.__', 'PredErrorSTDPersonal_07.__2.__'),
                 DomainNames =  c('Tame_05._2.', 'ActivEcono_35._4._2.1.4._0'))
 PredlmParam <- new(Class = 'PredlmParam',
                    EdData = FF.StQ,
                    VarNames = c('CifraNeg_13.___', 'Personal_07.__2.__'),
+                   DomainNames = 'Tame_05._2.',
                    Imputation = ImpParam)
-Predict(FD.StQ, PredlmParam)
+Predict(FD.dm, PredlmParam)
+
+
+
+FD <- readRDS('../E30183.FD.MM122016.rds')
+Units <- StQ::getUnits(FD)
+Units <- Units[sample(1:(dim(Units)[1]), 1000)]
+StQ::setUnits(FD) <- Units
+FD.dm <- StQ::dcast_StQ(FD)
+StQList <- readRDS('../E30183.FF.StQList.rds')
+StQ::setUnits(StQList) <- Units
+TS.list <- list(Reg = list('RegDiffTSPred', forward = 2L),
+                Stat = list('StatDiffTSPred', forward = 2L),
+                StatReg = list('StatRegDiffTSPred', forward = 2L),
+                Arima = list('AutoArimaTSPred', forward = 2L))
+VarNames <- c('CifraNeg_13.___', 'Personal_07.__1._1._')
+BestTSPredParam <- new(Class='BestTSPredParam', TSPred.list = TS.list, VarNames = VarNames)
+
+ImpParam <- new(Class = 'MeanImputationParam',
+                VarNames = 'CifraNeg_13.___',
+                DomainNames =  'Tame_05._2.')
+PredTSParam <- new(Class = 'PredTSParam',
+                   TS = StQList,
+                   Param = BestTSPredParam,
+                   Imputation = ImpParam)
+Predict(FD.dm, PredTSParam)
 
 }
-}
 
+}

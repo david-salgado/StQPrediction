@@ -41,14 +41,41 @@
 #'                    Imputation = ImpParam)
 #' Predict(FD.dm, PredlmParam)
 #'
+#'
+#'
+#' FD <- readRDS('../E30183.FD.MM122016.rds')
+#' Units <- StQ::getUnits(FD)
+#' Units <- Units[sample(1:(dim(Units)[1]), 1000)]
+#' StQ::setUnits(FD) <- Units
+#' FD.dm <- StQ::dcast_StQ(FD)
+#' StQList <- readRDS('../E30183.FF.StQList.rds')
+#' StQ::setUnits(StQList) <- Units
+#' TS.list <- list(Reg = list('RegDiffTSPred', forward = 2L),
+#'                 Stat = list('StatDiffTSPred', forward = 2L),
+#'                 StatReg = list('StatRegDiffTSPred', forward = 2L),
+#'                 Arima = list('AutoArimaTSPred', forward = 2L))
+#' VarNames <- c('CifraNeg_13.___', 'Personal_07.__1._1._')
+#' BestTSPredParam <- new(Class='BestTSPredParam', TSPred.list = TS.list, VarNames = VarNames)
+#'
+#' ImpParam <- new(Class = 'MeanImputationParam',
+#'                 VarNames = 'CifraNeg_13.___',
+#'                 DomainNames =  'Tame_05._2.')
+#' PredTSParam <- new(Class = 'PredTSParam',
+#'                    TS = StQList,
+#'                    Param = BestTSPredParam,
+#'                    Imputation = ImpParam)
+#' Predict(FD.dm, PredTSParam)
+#'
 #' }
-setGeneric("Predict", function(object, Param) {standardGeneric("Predict")})
-
-#' @rdname Predict
 #'
 #' @include PredlmParam-class.R
 #'
 #' @import data.table StQ
+#'
+#' @export
+setGeneric("Predict", function(object, Param) {standardGeneric("Predict")})
+
+#' @rdname Predict
 #'
 #' @export
 setMethod(f = "Predict",
@@ -111,7 +138,29 @@ setMethod(f = "Predict",
           output <- output[Data[, c(IDQuals, DomainNames), with = FALSE]]
           output <- Impute(output, Param@Imputation)
           return(output)
+          }
+)
 
-          return(lms)
+#' @rdname Predict
+#'
+#' @export
+setMethod(f = "Predict",
+          signature = c("data.table", "PredTSParam"),
+          function(object, Param){
+
+            EdData.StQList <- Param@TS
+            Param@Imputation@VarNames <- Param@Param@VarNames
+            PredVar <- paste0('Pred', Param@Imputation@VarNames)
+            STDVar <- paste0('STD', Param@Imputation@VarNames)
+            Param@Imputation@VarNames <- c(PredVar, STDVar)
+            Periods <- getPeriods(EdData.StQList)
+            IDQuals <- getIDQual(EdData.StQList[[length(Periods)]], 'MicroData')
+            Units <- object[, IDQuals, with = FALSE]
+            setUnits(EdData.StQList) <- Units
+            output <- BestTSPred::BestTSPred(EdData.StQList, Param@Param)
+            if (!Param@Imputation@DomainNames %in% names(object)) stop()
+            output <- merge(output, object[, c(IDQuals, Param@Imputation@DomainNames), with = FALSE], by = IDQuals, all.x = TRUE)
+            output <- Impute(output, Param@Imputation)
+            return(output)
           }
 )
