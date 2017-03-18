@@ -21,8 +21,8 @@ License: file LICENSE
 Encoding: UTF-8
 LazyData: true
 Collate: 
+    'PredTSParam-class.R'
     'PredlmParam-class.R'
     'PredParam-class.R'
-    'PredTSParam-class.R'
     'Predict.R'
 RoxygenNote: 6.0.1
