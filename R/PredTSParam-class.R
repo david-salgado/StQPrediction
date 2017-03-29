@@ -17,7 +17,7 @@
 #' standard deviations).
 #'
 #' @examples
-#' # An empty PredlmParam object:
+#' # An empty PredTSParam object:
 #' new(Class = 'PredTSParam')
 #'
 #' \dontrun{
