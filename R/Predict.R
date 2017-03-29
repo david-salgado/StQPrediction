@@ -88,14 +88,8 @@ setMethod(f = "Predict",
 
           }
 
-          if (!all(Param@Imputation@DomainNames %in% names(object))) {
-
-            stop('[StQPrediction:: Predict] DomainNames in slot Imputation not contained in input object Param.')
-
-          }
-
           Variables <- Param@VarNames
-          DomainNames <- unique(c(Param@DomainNames, Param@Imputation@DomainNames))
+          DomainNames <- Param@DomainNames
           EdData.StQ <- Param@EdData
           Units <- getUnits(EdData.StQ)
           IDQuals <- names(Units)
@@ -136,7 +130,6 @@ setMethod(f = "Predict",
 
           output <- Reduce(function(x, y){merge(x, y, by = intersect(names(x), names(y)), all = TRUE)}, Preds, init = Preds[[1]])
           output <- output[Data[, c(IDQuals, DomainNames), with = FALSE]]
-          output <- Impute(output, Param@Imputation)
           return(output)
           }
 )
@@ -149,18 +142,14 @@ setMethod(f = "Predict",
           function(object, Param){
 
             EdData.StQList <- Param@TS
-            Param@Imputation@VarNames <- Param@Param@VarNames
-            PredVar <- paste0('Pred', Param@Imputation@VarNames)
-            STDVar <- paste0('STD', Param@Imputation@VarNames)
-            Param@Imputation@VarNames <- c(PredVar, STDVar)
+            PredVar <- paste0('Pred', Param@Param@VarNames)
+            STDVar <- paste0('STD', Param@Param@VarNames)
+            Param@Param@VarNames <- c(PredVar, STDVar)
             Periods <- getPeriods(EdData.StQList)
             IDQuals <- getIDQual(EdData.StQList[[length(Periods)]], 'MicroData')
             Units <- object[, IDQuals, with = FALSE]
             setUnits(EdData.StQList) <- Units
             output <- BestTSPred::BestTSPred(EdData.StQList, Param@Param)
-            if (!Param@Imputation@DomainNames %in% names(object)) stop()
-            output <- merge(output, object[, c(IDQuals, Param@Imputation@DomainNames), with = FALSE], by = IDQuals, all.x = TRUE)
-            output <- Impute(output, Param@Imputation)
             return(output)
           }
 )

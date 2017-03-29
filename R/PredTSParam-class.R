@@ -12,10 +12,6 @@
 #' @slot DomainNames Character vector with the names of the variables determining the domains of the
 #' population within which predictions are to be calculated separately.
 #'
-#' @slot Imputation \linkS4class{ImputationParam} object with the parameters to imputed missing
-#' values during the computation of predicted values and their standard deviations (predition error
-#' standard deviations).
-#'
 #' @examples
 #' # An empty PredTSParam object:
 #' new(Class = 'PredTSParam')
@@ -29,27 +25,21 @@
 #' VarNames <- c('CifraNeg_13.___', 'Personal_07.__1._1._')
 #' BestTSPredParam <- new(Class='BestTSPredParam', TSPred.list = TS.list, VarNames = VarNames)
 #'
-#' ImpParam <- new(Class = 'MeanImputationParam',
-#'                 VarNames = 'CifraNeg_13.___',
-#'                 DomainNames =  'Tame_05._4.')
 #' PredTSParam <- new(Class = 'PredTSParam',
 #'                    TS = StQList,
-#'                    Param = BestTSPredParam,
-#'                    Imputation = ImpParam)
+#'                    Param = BestTSPredParam)
 #'
 #'
 #' }
 #'
-#' @import data.table StQ RepoTime StQImputation BestTSPred
+#' @import data.table StQ RepoTime BestTSPred
 #'
 #' @export
 setClass(Class = "PredTSParam",
          slots = c(TS = 'StQList',
-                   Param = 'BestTSPredParam',
-                   Imputation = 'ImputationParam'),
+                   Param = 'BestTSPredParam'),
          prototype = list(TS = StQList(),
-                          Param = new(Class = 'BestTSPredParam'),
-                          Imputation = new(Class = 'MeanImputationParam')),
+                          Param = new(Class = 'BestTSPredParam')),
          validity = function(object){
 
 

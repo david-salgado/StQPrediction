@@ -12,10 +12,6 @@
 #' @slot DomainNames Character vector with the names of the variables determining the domains of the
 #' population within which predictions are to be calculated separately.
 #'
-#' @slot Imputation \linkS4class{ImputationParam} object with the parameters to imputed missing
-#' values during the computation of predicted values and their standard deviations (predition error
-#' standard deviations).
-#'
 #' @examples
 #' # An empty PredlmParam object:
 #' new(Class = 'PredlmParam')
@@ -27,24 +23,21 @@
 #' PredlmParam <- new(Class = 'PredlmParam',
 #'                    RawData = FD.StQList,
 #'                    EdData = FF.StQList,
-#'                    VarNames = 'CifraNeg_13.___',
-#'                    Imputation = ImpParam)
+#'                    VarNames = 'CifraNeg_13.___')
 #'
 #'
 #' }
 #'
-#' @import data.table StQ RepoTime StQImputation
+#' @import data.table StQ
 #'
 #' @export
 setClass(Class = "PredlmParam",
          slots = c(EdData = 'StQ',
                    VarNames = 'character',
-                   DomainNames = 'character',
-                   Imputation = 'ImputationParam'),
+                   DomainNames = 'character'),
          prototype = list(EdData = StQ(),
                           VarNames = character(0),
-                          DomainNames = character(0),
-                          Imputation = new(Class = 'MeanImputationParam')),
+                          DomainNames = character(0)),
          validity = function(object){
 
 
