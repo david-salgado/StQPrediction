@@ -1,7 +1,7 @@
 Package: StQPrediction
 Type: Package
 Title: Define S4 classes and methods to make predictions
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person("David", "Salgado", email = "david.salgado.fernandez@gmail.com", role = c("cre", "aut")),
     person("Elisa", "Esteban", email = "elisa.esteban.segurado@gmail.com", role = "aut"),

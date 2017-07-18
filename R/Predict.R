@@ -142,9 +142,9 @@ setMethod(f = "Predict",
           function(object, Param){
 
             EdData.StQList <- Param@TS
-            PredVar <- paste0('Pred', Param@Param@VarNames)
-            STDVar <- paste0('STD', Param@Param@VarNames)
-            Param@Param@VarNames <- c(PredVar, STDVar)
+            PredVar <- Param@Param@VarNames
+            STDVar <- Param@Param@VarNames
+            Param@Param@VarNames <- unique(c(PredVar, STDVar))
             Periods <- getPeriods(EdData.StQList)
             IDQuals <- getIDQual(EdData.StQList[[length(Periods)]], 'MicroData')
             Units <- object[, IDQuals, with = FALSE]
